@@ -1,4 +1,4 @@
-# utils
+# Utils
 
 A collection of miscellaneous utility tools and CLI apps — lightweight scripts designed to make everyday tasks faster and easier.
 
