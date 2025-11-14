@@ -2,9 +2,38 @@
 
 A simple CLI utility for generating formatted text headers.
 
-## Requirements
+## 📦 Requirements
 
 * Python >= 3.9
+
+## 🛠 Usage
+
+Run with a positional argument: 
+
+```console
+$ header-cli "Project Title"
+################################ - PROJECT TITLE - #################################
+```
+
+Run with flags:
+```console
+$ header-cli -H "build complete" -s multi -c "=" -w 60
+============================================================
+= - BUILD COMPLETE - 
+============================================================
+```
+
+### ⚙️ Options
+
+`header-cli` supports the following flags:
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `head` (positional) | Header text | — |
+| `-H, --head` | Header text (alternative flag form) | — |
+| `-s, --style` | Border style (`single`, `multi`) | `single` |
+| `-c, --char` | Character to use for the border | `#` |
+| `-w, --width` | Width of the rows | `84` |
 
 ## 🚀 Installation
 
