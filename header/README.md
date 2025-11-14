@@ -41,7 +41,7 @@ Clone the repository:
 
 ```bash
 git clone https://github.com/your-username/utils.git
-cd utils
+cd utils/header
 ```
 
 ### Unix
@@ -52,7 +52,7 @@ Make files executable:
 chmod +x header-cli
 ```
 
-Additionaly, you can copy any app to a location in your PATH:
+Additionally, you can copy any app to a location in your PATH:
 
 ```bash
 cp header-cli ~/.local/bin/header-cli
