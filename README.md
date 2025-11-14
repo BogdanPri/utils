@@ -10,23 +10,3 @@ Current utilities include:
 
 - **header-cli** — Generate formatted text headers for scripts, logs, or documentation.
 
-## 🚀 Installation
-
-Clone the repository:
-
-```bash
-git clone https://github.com/your-username/utils.git
-cd utils
-```
-
-Make files executable:
-
-```bash
-chmod +x header-cli
-```
-
-Additionaly, you can copy any app to a location in your PATH:
-
-```bash
-cp header-cli ~/.local/bin/header-cli
-```
