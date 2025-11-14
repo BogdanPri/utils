@@ -1,5 +1,11 @@
 # header-cli
 
+A simple CLI utility for generating formatted text headers.
+
+## Requirements
+
+* Python >= 3.9
+
 ## 🚀 Installation
 
 Clone the repository:
