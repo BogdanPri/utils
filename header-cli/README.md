@@ -68,7 +68,7 @@ cd utils/header
 Make files executable:
 
 ```bash
-chmod +x header
+chmod u+x header
 ```
 
 Additionally, you can copy any app to a location in your PATH:
