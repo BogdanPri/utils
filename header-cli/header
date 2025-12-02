@@ -33,35 +33,37 @@ def headerize(head: str, style: str, char: str, width: str | int, box: int) -> s
     if width == 'auto':
         width = len(formatted_head) + 2
 
-    if box > 0:
-        if box == 1: # style 1
-            v  = "║" # vertical
-            h  = "═" # horizontal
-            ul = "╔" # upper left
-            ur = "╗" # upper right
-            bl = "╚" # bottom left
-            br = "╝" # bottom right
-        elif box == 2: # style 2
+    if box != 'none':
+        if box == 'thin': # style 2
             v  = "│" # vertical
             h  = "─" # horizontal
             ul = "┌" # upper left
             ur = "┐" # upper right
             bl = "└" # bottom left
             br = "┘" # bottom right
-        elif box == 3: # style 3
+        elif box == 'thick': # style 3
             v  = "┃" # vertical
             h  = "━" # horizontal
             ul = "┏" # upper left
             ur = "┓" # upper right
             bl = "┗" # bottom left
             br = "┛" # bottom right
-        else: # style 4
+        elif box == 'round': # style 4
             v  = "│" # vertical
             h  = "─" # horizontal
             ul = "╭" # upper left
             ur = "╮" # upper right
             bl = "╰" # bottom left
             br = "╯" # bottom right
+        elif box == 'double': # style 1
+            v  = "║" # vertical
+            h  = "═" # horizontal
+            ul = "╔" # upper left
+            ur = "╗" # upper right
+            bl = "╚" # bottom left
+            br = "╝" # bottom right
+        else:
+            raise argparse.ArgumentTypeError(f"{box} is not a valid choice.")
 
         top     = ul + h * (width - 2) + ur
         bottom  = bl + h * (width - 2) + br
@@ -115,7 +117,7 @@ def main():
     parser.add_argument("-s", "--style", choices=["single", "multi"], default="single", help="Border style.")
     parser.add_argument("-c", "--char", default="#", help="Character to use for the border.")
     parser.add_argument("-w", "--width", default='84', help="Width of the rows.", type=str)
-    parser.add_argument("-b", "--box", choices=[1,2,3,4], default=0, help="Used do display boxed text.", type=int)
+    parser.add_argument("-b", "--box", choices=["thin", "thick", "round", "double"], default='none', help="Used do display boxed text.", type=str)
 
     ####################### - BOOLEAN FLAGS CONFIGURATION - ########################
 
