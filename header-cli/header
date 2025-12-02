@@ -23,14 +23,15 @@ import sys
 # - FUNCTIONS - 
 ####################################################################################
 
-def header(head: str, style: str, char: str, width: str | int, box: int, parser) -> str:
+def header(head: str, style: str, char: str, width: str | int, box: int, align: str, parser) -> str:
     """This function takes a string and formats it as a header, using the specified style, width and character."""
 
     ########################### - BOXED HEADER FORMAT - ############################
 
     formatted_head = f" {head} "
 
-    width = get_width(width, box, formatted_head, parser)
+    width = get_width(width, box, style, formatted_head, parser)
+    align = get_align(align, box, style, parser)
 
     if box != 'none':
         if box == 'thin': # style 2
@@ -67,7 +68,7 @@ def header(head: str, style: str, char: str, width: str | int, box: int, parser)
         top     = ul + h * (width - 2) + ur
         bottom  = bl + h * (width - 2) + br
 
-        return f"{top}\n{v}{formatted_head:^{width - 2}}{v}\n{bottom}"
+        return f"{top}\n{v}{formatted_head:{align}{width - 2}}{v}\n{bottom}"
 
     ############################ - CHAR HEADER FORMAT - ############################
 
@@ -79,26 +80,45 @@ def header(head: str, style: str, char: str, width: str | int, box: int, parser)
     border = char * width
 
     if style == 'single':
-        return f"{formatted_head:{char}^{width}}"
-    else:
-        return f"{border}\n{char * char_len}{formatted_head}\n{border}"
+        return f"{formatted_head:{char}{align}{width}}"
+    elif style == 'multi':
+        return f"{border}\n{char * char_len}{formatted_head:{align}{width-char_len}}\n{border}"
+    elif style == 'boxed':
+        return f"{border}\n{char * char_len}{formatted_head:{align}{width-2*char_len}}{char * char_len}\n{border}"
 
 ############################# - WIDTH CHECK FUNCTION - #############################
 
-def get_width(width: str, box: str, header: str, parser) -> int:
+def get_width(width: str, box: str, style: str, header: str, parser) -> int:
     """Determine the width of the header based on input parameters."""
+
+    header_width = len(header) + 2
+
     if width.lower() == 'default' and box.lower() == 'none':
         return 84
-    elif width.lower() == 'auto' or width.lower() == 'default' and box.lower() != 'none':
-        return len(header) + 2
+    elif width.lower() == 'auto' or style.lower() == 'boxed' or width.lower() == 'default' and box.lower() != 'none':
+        return header_width
     else:
         try:
             width = int(width)
             if width <= 0:
                 parser.error(f"Width must be positive, got {width}")
-            return max(width, 2)
+            return max(width, header_width)
         except ValueError:
             raise parser.error(f"Width must be integer or 'auto', got {width}")
+
+def get_align(align: str, box: str, style: str, parser) -> str:
+    if align.lower() == "left":
+        return "<"
+    elif align.lower() == "right":
+        return ">"
+    elif align.lower() == "center":
+        return "^"
+    elif align.lower() == 'default' and box.lower() != 'none' or style.lower() == 'single' or style.lower() == 'boxed':
+        return "^"
+    elif align.lower() == 'default' and style.lower() == 'multi':
+        return "<"
+    else:
+        parser.error(f"Invalid option {align}")
 
 ####################################################################################
 # - MAIN - 
@@ -117,10 +137,11 @@ def main():
 
     parser.add_argument("head", nargs="?", help="The header text")
     parser.add_argument("-H", "--head", dest="header", help="The header text (alternative flag form).")
-    parser.add_argument("-s", "--style", choices=["single", "multi"], default="single", help="Border style.")
+    parser.add_argument("-s", "--style", choices=["single", "multi", "boxed"], default="single", help="Border style.")
     parser.add_argument("-c", "--char", default="#", help="Character to use for the border.")
     parser.add_argument("-w", "--width", default='default', help="Width of the rows.", type=str)
     parser.add_argument("-b", "--box", choices=["thin", "thick", "round", "double"], default='none', help="Used do display boxed text.", type=str)
+    parser.add_argument("-a", "--align", choices=['left', 'right', 'center'], default='default', help="Used do display boxed text.", type=str)
 
     ####################### - BOOLEAN FLAGS CONFIGURATION - ########################
 
@@ -157,7 +178,7 @@ def main():
 
     ############################## - FUNCTION CALL - ###############################
 
-    print(header(head, args.style, args.char, args.width, args.box, parser))
+    print(header(head, args.style, args.char, args.width, args.box, args.align, parser))
 
 ####################################################################################
 # - EXEC - 
