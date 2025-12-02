@@ -23,15 +23,14 @@ import sys
 # - FUNCTIONS - 
 ####################################################################################
 
-def headerize(head: str, style: str, char: str, width: str | int, box: int) -> str:
+def header(head: str, style: str, char: str, width: str | int, box: int, parser) -> str:
     """This function takes a string and formats it as a header, using the specified style, width and character."""
 
     ########################### - BOXED HEADER FORMAT - ############################
 
     formatted_head = f" {head} "
 
-    if width == 'auto':
-        width = len(formatted_head) + 2
+    width = get_width(width, box, formatted_head, parser)
 
     if box != 'none':
         if box == 'thin': # style 2
@@ -63,7 +62,7 @@ def headerize(head: str, style: str, char: str, width: str | int, box: int) -> s
             bl = "╚" # bottom left
             br = "╝" # bottom right
         else:
-            raise argparse.ArgumentTypeError(f"{box} is not a valid choice.")
+            parser.error(f"{box} is not a valid choice.")
 
         top     = ul + h * (width - 2) + ur
         bottom  = bl + h * (width - 2) + br
@@ -86,16 +85,20 @@ def headerize(head: str, style: str, char: str, width: str | int, box: int) -> s
 
 ############################# - WIDTH CHECK FUNCTION - #############################
 
-def width_check(value: str) -> str | int:
-    if value.lower() == 'auto':
-        return 'auto'
-    try:
-        width = int(value)
-        if width <= 0:
-            raise argparse.ArgumentTypeError(f"Width must be positive, got {width}")
-        return max(width, 2)
-    except ValueError:
-        raise argparse.ArgumentTypeError(f"Width must be integer or 'auto', got {value}")
+def get_width(width: str, box: str, header: str, parser) -> int:
+    """Determine the width of the header based on input parameters."""
+    if width.lower() == 'default' and box.lower() == 'none':
+        return 84
+    elif width.lower() == 'auto' or width.lower() == 'default' and box.lower() != 'none':
+        return len(header) + 2
+    else:
+        try:
+            width = int(width)
+            if width <= 0:
+                parser.error(f"Width must be positive, got {width}")
+            return max(width, 2)
+        except ValueError:
+            raise parser.error(f"Width must be integer or 'auto', got {width}")
 
 ####################################################################################
 # - MAIN - 
@@ -116,7 +119,7 @@ def main():
     parser.add_argument("-H", "--head", dest="header", help="The header text (alternative flag form).")
     parser.add_argument("-s", "--style", choices=["single", "multi"], default="single", help="Border style.")
     parser.add_argument("-c", "--char", default="#", help="Character to use for the border.")
-    parser.add_argument("-w", "--width", default='84', help="Width of the rows.", type=str)
+    parser.add_argument("-w", "--width", default='default', help="Width of the rows.", type=str)
     parser.add_argument("-b", "--box", choices=["thin", "thick", "round", "double"], default='none', help="Used do display boxed text.", type=str)
 
     ####################### - BOOLEAN FLAGS CONFIGURATION - ########################
@@ -152,11 +155,9 @@ def main():
     elif args.swapcase:
         head = head.swapcase()
 
-    width = width_check(args.width)
-
     ############################## - FUNCTION CALL - ###############################
 
-    print(headerize(head, args.style, args.char, width, args.box))
+    print(header(head, args.style, args.char, args.width, args.box, parser))
 
 ####################################################################################
 # - EXEC - 
