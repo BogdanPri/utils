@@ -6,7 +6,7 @@
 ####################################################################################
 
 """
-header-cli — A simple CLI utility for generating formatted text headers.
+headerize-cli — A simple CLI utility for generating formatted text headers.
 
 Copyright (c) 2025 Bogdan Pricope
 SPDX-License-Identifier: BSD-3-Clause
@@ -23,15 +23,15 @@ import sys
 # - FUNCTIONS - 
 ####################################################################################
 
-def header(head: str, style: str, char: str, width: int, decor: str | None, box: int) -> str:
+def headerize(head: str, style: str, char: str, width: str | int, box: int) -> str:
     """This function takes a string and formats it as a header, using the specified style, width and character."""
 
     ########################### - BOXED HEADER FORMAT - ############################
 
-    if decor is None:
-        formatted_head = f" {head} "
-    else:
-        formatted_head = f" {decor} {head} {decor} "
+    formatted_head = f" {head} "
+
+    if width == 'auto':
+        width = len(formatted_head) + 2
 
     if box > 0:
         if box == 1: # style 1
@@ -82,6 +82,23 @@ def header(head: str, style: str, char: str, width: int, decor: str | None, box:
     else:
         return f"{border}\n{char * char_len}{formatted_head}\n{border}"
 
+############################# - WIDTH CHECK FUNCTION - #############################
+
+def width_check(value: str) -> str | int:
+    if value.lower() == 'auto':
+        return 'auto'
+    try:
+        width = int(value)
+        if width <= 0:
+            raise argparse.ArgumentTypeError(f"Width must be positive, got {width}")
+        return max(width, 2)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"Width must be integer or 'auto', got {value}")
+
+####################################################################################
+# - MAIN - 
+####################################################################################
+
 def main():
 
     ############################### - PARSER SETUP - ###############################
@@ -97,9 +114,8 @@ def main():
     parser.add_argument("-H", "--head", dest="header", help="The header text (alternative flag form).")
     parser.add_argument("-s", "--style", choices=["single", "multi"], default="single", help="Border style.")
     parser.add_argument("-c", "--char", default="#", help="Character to use for the border.")
-    parser.add_argument("-w", "--width", default=84, help="Width of the rows.", type=int)
+    parser.add_argument("-w", "--width", default='84', help="Width of the rows.", type=str)
     parser.add_argument("-b", "--box", choices=[1,2,3,4], default=0, help="Used do display boxed text.", type=int)
-    parser.add_argument("-d", "--decor", default=None, help="Decoration surrounding the header.")
 
     ####################### - BOOLEAN FLAGS CONFIGURATION - ########################
 
@@ -134,9 +150,11 @@ def main():
     elif args.swapcase:
         head = head.swapcase()
 
+    width = width_check(args.width)
+
     ############################## - FUNCTION CALL - ###############################
 
-    print(header(head, args.style, args.char, args.width, args.decor, args.box))
+    print(headerize(head, args.style, args.char, width, args.box))
 
 ####################################################################################
 # - EXEC - 
