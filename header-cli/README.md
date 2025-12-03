@@ -15,10 +15,6 @@ $ header "project title"
 ################################## project title ###################################
 ```
 
-```console
-$ header --border-only --width 50
-##################################################
-```
 
 Run with flags:
 ```console
@@ -26,6 +22,11 @@ $ header --head "build complete" --style multi --char "=" --width 60 --upper --a
 ============================================================
 = BUILD COMPLETE 
 ============================================================
+```
+
+```console
+$ header --border-only --width 50
+##################################################
 ```
 
 Run with box mode:
@@ -46,8 +47,8 @@ $ header --title --width auto --box double "welcome back"
 | `-H, --head` | Header text (alternative flag form) | — |
 | `-s, --style` | Border style (`single`, `multi`) | `single` |
 | `-c, --char` | Character to use for the border | `#` |
-| `-w, --width` | Width of the rows | `84` |
-| `-a, --align` | Header justification | `center` or `left` (depending on style) |
+| `-w, --width` | Width of the rows | `84` or `auto` |
+| `-a, --align` | Header justification | `center` or `left` |
 | `-b, --box` | Surround header by a box (overrides other flags) | `none` |
 
 `header-cli` supports the following value toggles:
