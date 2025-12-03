@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ####################################################################################
-# - COPYRIGHT - 
+# - COPYRIGHT -
 ####################################################################################
 
 """
@@ -13,119 +13,158 @@ SPDX-License-Identifier: BSD-3-Clause
 """
 
 ####################################################################################
-# - MODULES - 
+# - MODULES -
 ####################################################################################
 
 import argparse
 import sys
+import warnings
 
 ####################################################################################
-# - FUNCTIONS - 
+# - FUNCTIONS -
 ####################################################################################
 
-def header(head: str, style: str, char: str, width: str | int, box: int, align: str, parser) -> str:
-    """This function takes a string and formats it as a header, using the specified style, width and character."""
+def header(head: str, args) -> str:
+    """ This function takes a string and formats it as a header, using the
+    specified style, width and character."""
 
     ########################### - BOXED HEADER FORMAT - ############################
 
-    formatted_head = f" {head} "
-    char_len = len(char)
+    formatted_head: str = f" {head} "
+    char_len: int = len(args.char)
 
     if char_len > 1:
-        char = char[0]
+        char0: str = args.char[0]
+        char:  str = args.char[-1]
+    else:
+        char0: str = args.char
+        char:  str = args.char
 
-    width = get_width(width, box, style, char_len, formatted_head, parser)
-    align = get_align(align, box, style, parser)
+    width: int = get_width(args.width, args.box, args.style, char_len, formatted_head)
+    align: str = get_align(args.align, args.box, args.style)
 
-    if box != 'none':
-        if box == 'thin': # style 2
-            v  = "│" # vertical
-            h  = "─" # horizontal
-            ul = "┌" # upper left
-            ur = "┐" # upper right
-            bl = "└" # bottom left
-            br = "┘" # bottom right
-        elif box == 'thick': # style 3
-            v  = "┃" # vertical
-            h  = "━" # horizontal
-            ul = "┏" # upper left
-            ur = "┓" # upper right
-            bl = "┗" # bottom left
-            br = "┛" # bottom right
-        elif box == 'round': # style 4
-            v  = "│" # vertical
-            h  = "─" # horizontal
-            ul = "╭" # upper left
-            ur = "╮" # upper right
-            bl = "╰" # bottom left
-            br = "╯" # bottom right
-        elif box == 'double': # style 1
-            v  = "║" # vertical
-            h  = "═" # horizontal
-            ul = "╔" # upper left
-            ur = "╗" # upper right
-            bl = "╚" # bottom left
-            br = "╝" # bottom right
-        else:
-            parser.error(f"{box} is not a valid choice.")
+    border: str = char*width if char_len == 1 else char0 + char*(width-2) + char0
 
-        top     = ul + h * (width - 2) + ur
-        bottom  = bl + h * (width - 2) + br
+    if args.border_only:
+        return border
 
-        return f"{top}\n{v}{formatted_head:{align}{width - 2}}{v}\n{bottom}"
+    if args.box != 'none':
+        return draw_boxed(formatted_head, args.box, width, align)
 
     ############################ - CHAR HEADER FORMAT - ############################
 
-    border = char * width
+    if args.style == 'multi':
+        return (
+            f"{border}\n"
+            f"{char0*char_len}{formatted_head:{align}{width-char_len}}\n"
+            f"{border}"
+        )
+    if args.style == 'boxed':
+        return (
+            f"{border}\n{char0}{char * (char_len-1)}"
+            f"{formatted_head:{align}{width-2*char_len}}"
+            f"{char * (char_len-1)}{char0}\n{border}"
+        )
+    return f"{formatted_head:{char}{align}{width}}"
 
-    if style == 'single':
-        return f"{formatted_head:{char}{align}{width}}"
-    elif style == 'multi':
-        return f"{border}\n{char * char_len}{formatted_head:{align}{width-char_len}}\n{border}"
-    elif style == 'boxed':
-        return f"{border}\n{char * char_len}{formatted_head:{align}{width-2*char_len}}{char * char_len}\n{border}"
-    else:
-        parser.error(f"Invalid style: {style}.")
+################################### FORMAT WIDTH ###################################
 
-############################# - WIDTH CHECK FUNCTION - #############################
-
-def get_width(width: str, box: str, style: str, char_len: int, header: str, parser) -> int:
+def get_width(width: str, box: str, style: str, char_len: int, fmt_header: str) -> int:
     """Determine the width of the header based on input parameters."""
 
-    header_width = len(header) + 2 * char_len
+    default: int = 84
+    header_width: int = len(fmt_header) + 2 * char_len
+
+    is_auto_width: list[bool] = [
+        width.lower() == "auto",
+        width.lower() == "default" and style.lower() == "boxed",
+        width.lower() == "default" and box.lower() != "none"
+    ]
 
     if width.lower() == 'default' and box.lower() == 'none':
-        return 84
-    elif width.lower() == 'auto' or width.lower() == 'default' and style.lower() == 'boxed' or width.lower() == 'default' and box.lower() != 'none':
+        return default
+    if any(is_auto_width):
         return header_width
-    else:
-        try:
-            width = int(width)
-            if width <= 0:
-                parser.error(f"Width must be positive, got {width}")
-            return max(width, header_width)
-        except ValueError:
-            raise parser.error(f"Width must be integer or 'auto', got {width}")
+    try:
+        _width = int(width)
+        if _width <= 0:
+            warnings.warn(f"Invalid option {width}, using default (84).")
+            return default
+        return max(_width, header_width)
+    except ValueError:
+        warnings.warn(f"Invalid option {width}, using default (84).")
+        return default
 
-def get_align(align: str, box: str, style: str, parser) -> str:
+################################# FORMAT ALIGNMENT #################################
+
+def get_align(align: str, box: str, style: str) -> str:
+    """Determine the alignment of the header based on input parameters."""
+
+    is_default_center: list[bool] = [
+        align.lower() == "default" and box.lower() != "none",
+        style.lower() == "single",
+        style.lower() == "boxed"
+    ]
+
     if align.lower() == "left":
         return "<"
-    elif align.lower() == "right":
+    if align.lower() == "right":
         return ">"
-    elif align.lower() == "center":
+    if align.lower() == "center":
         return "^"
-    elif align.lower() == 'default' and box.lower() != 'none' or style.lower() == 'single' or style.lower() == 'boxed':
+    if any(is_default_center):
         return "^"
-    elif align.lower() == 'default' and style.lower() == 'multi':
+    if align.lower() == "default" and style.lower() == "multi":
         return "<"
+    warnings.warn(f"Invalid option {align}. Using default (center).")
+    return "^"
+
+################################ BOX HEADER FORMAT #################################
+
+def draw_boxed(head, box: str, width: int, align: str) -> str:
+    """Draw a box around the header text based on the specified box style."""
+
+    if box == 'thick': # style 3
+        v  = "┃" # vertical
+        h  = "━" # horizontal
+        ul = "┏" # upper left
+        ur = "┓" # upper right
+        bl = "┗" # bottom left
+        br = "┛" # bottom right
+    elif box == 'round': # style 4
+        v  = "│" # vertical
+        h  = "─" # horizontal
+        ul = "╭" # upper left
+        ur = "╮" # upper right
+        bl = "╰" # bottom left
+        br = "╯" # bottom right
+    elif box == 'double': # style 1
+        v  = "║" # vertical
+        h  = "═" # horizontal
+        ul = "╔" # upper left
+        ur = "╗" # upper right
+        bl = "╚" # bottom left
+        br = "╝" # bottom right
     else:
-        parser.error(f"Invalid option {align}")
+        # Default
+        v  = "│" # vertical
+        h  = "─" # horizontal
+        ul = "┌" # upper left
+        ur = "┐" # upper right
+        bl = "└" # bottom left
+        br = "┘" # bottom right
+
+    top     = ul + h * (width - 2) + ur
+    bottom  = bl + h * (width - 2) + br
+
+    return f"{top}\n{v}{head:{align}{width - 2}}{v}\n{bottom}"
 
 ####################################################################################
-# - MAIN - 
+# - MAIN -
 ####################################################################################
 
 def main():
+    """ Main function to parse arguments and generate the header. """
 
     ############################### - PARSER SETUP - ###############################
 
@@ -137,20 +176,55 @@ def main():
     ####################### - VALUE OPTIONS CONFIGURATION - ########################
 
     parser.add_argument("head", nargs="?", help="The header text")
-    parser.add_argument("-H", "--head", dest="header", help="The header text (alternative flag form).")
-    parser.add_argument("-s", "--style", choices=["single", "multi", "boxed"], default="single", help="Border style.")
-    parser.add_argument("-c", "--char", default="#", help="Character to use for the border.")
-    parser.add_argument("-w", "--width", default='default', help="Width of the rows.", type=str)
-    parser.add_argument("-b", "--box", choices=["thin", "thick", "round", "double"], default='none', help="Used do display boxed text.", type=str)
-    parser.add_argument("-a", "--align", choices=['left', 'right', 'center'], default='default', help="Used do display boxed text.", type=str)
+
+    parser.add_argument(
+        "-H", "--head", dest="header",
+        help="The header text (alternative flag form)."
+    )
+    parser.add_argument(
+        "-s", "--style", choices=["single", "multi", "boxed"],
+        default="single", help="Border style."
+    )
+    parser.add_argument(
+        "-c", "--char", default="#",
+        help="Character to use for the border."
+    )
+    parser.add_argument(
+        "-w", "--width", default='default',
+        help="Width of the rows.", type=str
+    )
+    parser.add_argument(
+        "-b", "--box", choices=["thin", "thick", "round", "double"],
+        default='none', help="Used do display boxed text.", type=str
+    )
+    parser.add_argument(
+        "-a", "--align", choices=['left', 'right', 'center'],
+        default='default', help="Used do display boxed text.", type=str
+    )
+    parser.add_argument(
+        "--border-only", action="store_true",
+        help="Display only the border without the header text."
+    )
 
     ####################### - BOOLEAN FLAGS CONFIGURATION - ########################
 
     case_group = parser.add_mutually_exclusive_group()
-    case_group.add_argument("-U", "--upper", action="store_true", help="Converts header to UPPERCASE.")
-    case_group.add_argument("-L" ,"--lower", action="store_true", help="Converts header to lowercase.")
-    case_group.add_argument("-T", "--title", action="store_true", help="Converts header to Title_Case.")
-    case_group.add_argument("-S", "--swapcase", action="store_true", help="Converts header to sWAPcASE.")
+    case_group.add_argument(
+        "-U", "--upper", action="store_true",
+        help="Converts header to UPPERCASE."
+    )
+    case_group.add_argument(
+        "-L" ,"--lower", action="store_true",
+        help="Converts header to lowercase."
+    )
+    case_group.add_argument(
+        "-T", "--title", action="store_true",
+        help="Converts header to Title_Case."
+    )
+    case_group.add_argument(
+        "-S", "--swapcase", action="store_true",
+        help="Converts header to sWAPcASE."
+    )
 
     ############################# - ARGUMENT PARSING - #############################
 
@@ -166,7 +240,14 @@ def main():
         if not sys.stdin.isatty():
             head = sys.stdin.read().strip()
         else:
-            parser.error("You must provide a title, either positionally or with -H/--head.")
+
+            if not args.border_only:
+                parser.error(
+                    "No header text provided. Use positional argument,"
+                    "-H/--head flag, or pipe input."
+                )
+
+            head = ""
 
     if args.upper:
         head = head.upper()
@@ -179,15 +260,15 @@ def main():
 
     ############################## - FUNCTION CALL - ###############################
 
-    print(header(head, args.style, args.char, args.width, args.box, args.align, parser))
+    print(header(head, args))
 
 ####################################################################################
-# - EXEC - 
+# - EXEC -
 ####################################################################################
 
 if __name__ == "__main__":
     main()
 
 ####################################################################################
-# - END - 
+# - END -
 ####################################################################################
