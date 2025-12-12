@@ -1,5 +1,11 @@
 # header-cli
 
+<p align="left">
+  <img src="https://badges.fw-web.space/github/license/BogdanPri/header-cli?style=flat-square">
+  <img src="https://badges.fw-web.space/github/languages/code-size/BogdanPri/header-cli?style=flat-square">
+  <img alt="GitHub top language" src="https://badges.fw-web.space/github/languages/top/BogdanPri/header-cli?style=flat-square">
+</p>
+
 A simple CLI utility for generating formatted text headers.
 
 ## 📦 Requirements
