@@ -1,9 +1,10 @@
 # hfmt-cli
 
 <p align="left">
-  <img src="https://badges.fw-web.space/github/license/BogdanPri/header-cli?style=flat-square">
-  <img src="https://badges.fw-web.space/github/languages/code-size/BogdanPri/header-cli?style=flat-square">
-  <img alt="GitHub top language" src="https://badges.fw-web.space/github/languages/top/BogdanPri/header-cli?style=flat-square">
+  <a href="https://badge.fury.io/py/hfmt-cli"><img src="https://badge.fury.io/py/hfmt-cli.svg" alt="PyPI version"></a>
+  <img src="https://badges.fw-web.space/github/license/BogdanPri/hfmt-cli">
+  <img src="https://badges.fw-web.space/github/languages/code-size/BogdanPri/hfmt-cli">
+  <img alt="GitHub top language" src="https://badges.fw-web.space/github/languages/top/BogdanPri/hfmt-cli">
 </p>
 
 A simple CLI utility for generating formatted text headers with borders and boxes.
