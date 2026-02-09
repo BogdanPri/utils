@@ -71,7 +71,7 @@ $ hfmt --title --width auto --box double "welcome back"
 
 Clone the git repo:
 ```console
-git clone https://www.github.com/BogdanPri/hfmt-cli.git
+git clone https://github.com/BogdanPri/hfmt-cli.git
 ```
 
 Install via `pip`:
