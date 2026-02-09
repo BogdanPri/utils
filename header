@@ -6,7 +6,7 @@
 ####################################################################################
 
 """
-headerize-cli — A simple CLI utility for generating formatted text headers.
+hfmt-cli — A simple CLI utility for generating formatted text headers.
 
 Copyright (c) 2025 Bogdan Pricope
 SPDX-License-Identifier: BSD-3-Clause
@@ -24,7 +24,7 @@ import warnings
 # - FUNCTIONS -
 ####################################################################################
 
-def header(head: str, args) -> str:
+def hfmt(head: str, args) -> str:
     """ This function takes a string and formats it as a header, using the
     specified style, width and character."""
 
@@ -265,7 +265,7 @@ def main():
 
     ############################## - FUNCTION CALL - ###############################
 
-    print(header(head, args))
+    print(hfmt(head, args))
 
 ####################################################################################
 # - EXEC -
