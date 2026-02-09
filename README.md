@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://github.com/BogdanPri/hfmt-cli/raw/main/hfmt_demo.gif">
-    <img src="https://github.com/BogdanPri/hfmt-cli/raw/main/hfmt_demo.gif"/>
+    <img src="https://github.com/BogdanPri/hfmt-cli/blob/87c8a5ae43697cad9d350d6cf7240f50816a71ff/hfmt_demo.gif"/>
   </a>
 </p>
 
