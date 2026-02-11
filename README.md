@@ -1,5 +1,7 @@
 # hfmt-cli
 
+A simple CLI utility for generating formatted text headers with borders and boxes.
+
 <p align="center">
   <a href="https://github.com/BogdanPri/hfmt-cli/raw/main/hfmt_demo.gif">
     <img src="https://github.com/BogdanPri/hfmt-cli/blob/87c8a5ae43697cad9d350d6cf7240f50816a71ff/hfmt_demo.gif"/>
@@ -7,13 +9,12 @@
 </p>
 
 <p align="center">
-  <a href="https://badge.fury.io/py/hfmt-cli"><img src="https://badge.fury.io/py/hfmt-cli.svg" alt="PyPI version"></a>
-  <img src="https://badges.fw-web.space/github/license/BogdanPri/hfmt-cli">
+  <a href="https://pypi.org/project/hfmt-cli/"><img src="https://badge.fury.io/py/hfmt-cli.svg" alt="PyPI version"></a>
+  <a href="https://opensource.org/license/BSD-3-Clause"><img src="https://badges.fw-web.space/github/license/BogdanPri/hfmt-cli"></a>
+  <a href="https://github.com/BogdanPri/hfmt-cli"><img src="https://img.shields.io/badge/github-hfmt&hyphen;cli-blue?logo=github"></a>
   <img src="https://badges.fw-web.space/github/languages/code-size/BogdanPri/hfmt-cli">
-  <img alt="GitHub top language" src="https://badges.fw-web.space/github/languages/top/BogdanPri/hfmt-cli">
+  <!-- <img alt="GitHub top language" src="https://badges.fw-web.space/github/languages/top/BogdanPri/hfmt-cli"> -->
 </p>
-
-A simple CLI utility for generating formatted text headers with borders and boxes.
 
 ## 📦 Requirements
 
